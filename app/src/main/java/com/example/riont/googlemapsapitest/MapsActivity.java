@@ -2,6 +2,8 @@ package com.example.riont.googlemapsapitest;
 
 import android.app.DialogFragment;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.pm.ActivityInfo;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -22,21 +24,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private  LatLng puntoSalida;
     //</editor-fold>
 
+    /** Metodo para realizar operaciones Antes
+     * de que la vista del Activity sea creada.
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_maps);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
     }
+
+    /** Metodo donde trabaja con los puntos de salida y llega para convertir
+     *  en un String url y ser usado en una peticion HTTP.
+     * @return Un String la cual representara el url
+     */
     private String getMapsApiDirectionsUrl() {
         String waypoints = "origin=" +puntoSalida.latitude + "," + puntoSalida.longitude
                 + "&destination=" +puntoLlegada.latitude + "," + puntoLlegada.longitude;
-        String key ="key=AIzaSyDHmEgoFsAAi8zA6uuoiKNqUE2Xr0HL4A8";
         String sensor = "sensor=false";
         String params = waypoints + "&" + sensor;
         String output = "json";
@@ -45,6 +53,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return url;
     }
 
+    /** Metodo para realizar operaciones sobre el Mapa de Google.
+     * @param googleMap Instancia del objeto googleMap ya creado por defecto,
+     *                  para luego ser manipulado.
+     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
@@ -61,7 +73,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     if(isOnline()){
                         buscarRuta();
                     }else{
-                        showDialog("Aparentemente actualmente no posee conexion a internet");
+                        SimpleDialogo dialog = new SimpleDialogo();
+                        dialog.setTitulo("Aparentemente actualmente no posee conexion a internet");
+                        dialog.show(getFragmentManager(), "SimpleDialog");
                     }
                 }
         }
@@ -76,6 +90,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
         map.setMyLocationEnabled(true);
     }
+
+    /** Meotodo para verificar la conexion internet del dispositivo.
+     * @return true si se realizo una correcta peticion de paquetes datos
+     * y false si no se logro realizar la peticion.
+     */
     public boolean isOnline() {
         ConnectivityManager cm =
                 (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -85,22 +104,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         return false;
     }
-    public void showDialog(String titulo) {
-        // Create an instance of the dialog fragment and show it
-        SimpleDialogo dialog = new SimpleDialogo();
-        dialog.setTitulo(titulo);
-        dialog.show(getFragmentManager(), "SimpleDialog");
-    }
 
+    /** Metodo para respuesta a la pulsacion del boton positivo de un dialogo que
+     * pasa por parametro.
+     * @param dialog Un dialogFragment donde se manipulara el boton positivo.
+     */
     @Override
     public void onDialogPositiveClick(DialogFragment dialog) {
-        buscarRuta();
+        map.clear();
+        puntoSalida = null;
+        puntoLlegada = null;
     }
 
+    /** Metodo para respusta a la pulsacion del boton negativo de un dialogo que se
+     * pasa por parametro.
+     * @param dialog Un dialogo Fragment donde se manipulara el boton negativo.
+     */
     @Override
     public void onDialogNegativeClick(DialogFragment dialog) {
         MapsActivity.this.finish();
     }
+
+    /**
+     * Metodo la cual luego de que se tengan los puntos de salida y de llegada,
+     * realiza la peticion por medio un Objeto GoogleRuta y muestra el total a
+     * pagar.
+     */
     public void buscarRuta(){
         Snackbar.make(findViewById(R.id.map), "Buscando Ruta",
                 Snackbar.LENGTH_SHORT).show();
@@ -108,12 +137,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void run() {
                 try {
-                    sleep(Snackbar.LENGTH_LONG);
+                    sleep(3000);
                 }catch (Exception e){
                     e.printStackTrace();
                 }finally {
                     String url = getMapsApiDirectionsUrl();
-                    GoogleRuta ruta = new GoogleRuta(map, getApplication(), url);
+                    GoogleRuta ruta = new GoogleRuta(map, url);
+                    while(!ruta.getEncontrado()){
+                        try {
+                            sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    SimpleDialogo sp = new SimpleDialogo();
+                    float totalPagar = ruta.getDistancia() *50;
+                    sp.setTitulo("Total a Pagar "+ Math.round(totalPagar)+"Bsf");
+                    sp.show(getFragmentManager(), "DialogPagar");
                 }
             }
         };

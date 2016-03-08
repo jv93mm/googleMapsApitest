@@ -25,8 +25,14 @@ public class ActivitySplash  extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN
+                ,WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.splash);
+        if(savedInstanceState == null){
+            cargarMapa();
+        }
+    }
+    private void cargarMapa(){
         if(isOnline()){
             Thread timerThread = new Thread() {
                 public void run() {
@@ -56,6 +62,7 @@ public class ActivitySplash  extends AppCompatActivity {
 
         // set dialog message
         alertDialogBuilder
+                .setTitle("¿Desea Salir?")
                 .setMessage("Es necesario que este conectado a internet para continuar")
                 .setIcon(R.drawable.cast_ic_notification_0)
                 .setCancelable(false)

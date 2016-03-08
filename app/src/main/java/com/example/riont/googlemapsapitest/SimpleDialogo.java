@@ -16,6 +16,7 @@ public class SimpleDialogo extends DialogFragment {
      * Each method passes the DialogFragment in case the host needs to query it. */
     private String titulo;
     private String msj;
+    private AlertDialog.Builder builder;
 
     public interface SimpleDialogoListener {
         public void onDialogPositiveClick(DialogFragment dialog);
@@ -47,7 +48,7 @@ public class SimpleDialogo extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Build the dialog and set up the button click handlers
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder = new AlertDialog.Builder(getActivity());
         builder.setMessage(titulo)
                 .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
@@ -60,5 +61,9 @@ public class SimpleDialogo extends DialogFragment {
 
     public void setTitulo(String titulo) {
         this.titulo = titulo;
+    }
+
+    public void setMsj(String msj) {
+        this.msj = msj;
     }
 }
