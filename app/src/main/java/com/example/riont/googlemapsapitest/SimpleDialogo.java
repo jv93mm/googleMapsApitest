@@ -7,44 +7,55 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
-/**
+/** Clase para mostrar Dialogo estandar en un FragmentActivity
  * Created by riont on 15/02/16.
  */
 public class SimpleDialogo extends DialogFragment {
-    /* The activity that creates an instance of this dialog fragment must
-     * implement this interface in order to receive event callbacks.
-     * Each method passes the DialogFragment in case the host needs to query it. */
+
     private String titulo;
     private String msj;
     private AlertDialog.Builder builder;
 
+    /**
+     * La clase SimpleDialogo implementa un una interfaz, para cuando se
+     * implemente la clase SimpleDialogo esta oblige al programador utilizar
+     * los dos metodos que representarian las acciones de el dialogo.
+     */
     public interface SimpleDialogoListener {
         public void onDialogPositiveClick(DialogFragment dialog);
         public void onDialogNegativeClick(DialogFragment dialog);
     }
 
-    // Use this instance of the interface to deliver action events
     SimpleDialogoListener mListener;
 
+    /**
+     * Constructor por defecto inicializa sus atributos.
+     */
     public SimpleDialogo() {
         titulo = "";
         msj = "";
     }
 
-    // Override the Fragment.onAttach() method to instantiate the NoticeDialogListener
+
+    /** Metodo que al usar la clase SimpleDialogo esta obliga a implementar
+     * el contenido de mListener.
+     * @param activity El activity que implementa la clase.
+     */
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        // Verify that the host activity implements the callback interface
         try {
-            // Instantiate the NoticeDialogListener so we can send events to the host
             mListener = (SimpleDialogoListener) activity;
         } catch (ClassCastException e) {
-            // The activity doesn't implement the interface, throw exception
             throw new ClassCastException(activity.toString()
                     + " must implement NoticeDialogListener");
         }
     }
+
+    /** Metodo para realizar aplicar las configuraciones necesarias para el dialogo.
+     * @param savedInstanceState para saber si el objeto esta instanciado o no.
+     * @return un dialogo ya creado con las configuraciones asignadas dentro del metodo.
+     */
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Build the dialog and set up the button click handlers
