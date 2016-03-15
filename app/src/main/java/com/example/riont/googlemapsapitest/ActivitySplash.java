@@ -16,12 +16,21 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-/**
+/** Clase ActivitySplash interfaz grafica encargada de la presentacion inicial
+ * de la app, este comprueba si el dispositivo posee internet al momento de inicial la app
+ * en dado caso de que no tenga, es notificado el usario de esto, y caso de que si
+ * muestra una imagen cargada en el proyecto con una duracion de 3 seg. Luego pasa
+ * a la interfaz de Mapa.
  * Created by riont on 01/01/16.
  */
 public class ActivitySplash  extends AppCompatActivity {
     final Context context = this;
 
+    /** Metodo para realizar operaciones antes de que la vista
+     * del activity se muestre en pantalla.
+     * @param savedInstanceState objeto que para verificar si el activity
+     * a sido instanciado.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,6 +41,12 @@ public class ActivitySplash  extends AppCompatActivity {
             cargarMapa();
         }
     }
+
+    /** Metodo cargarMapa, encardado de verificar si tiene conexion en dispositivo
+     * con IsOnline dependiendo de las respuesta de este metodo notifica al usuario
+     * si el dispositivo tienen conexion espera 3 segundo y se instancia la clase
+     * MapsActivity.
+     */
     private void cargarMapa(){
         if(isOnline()){
             Thread timerThread = new Thread() {
@@ -53,6 +68,10 @@ public class ActivitySplash  extends AppCompatActivity {
         }
     }
 
+    /** Metodo para mostrar dialogo con botones y mensaje predefinido.
+     *  este notifica al usuario la falta de conexion a internet y dependiendo que responda
+     *  el usuario este puede cerrar la app o continuar, Ademas dialogo no puede ser Cancelado.
+     */
     private void mostrarDialogo() {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
                 context);
@@ -88,6 +107,12 @@ public class ActivitySplash  extends AppCompatActivity {
         alertDialog.show();
 
     }
+
+    /** Metodo para verificar si el dispositivo posee conexion a internet,
+     * sea por wifi o megas.
+     * @return boolean representando si posee conexion o no en el instante que fue llamado
+     * el metodo.
+     */
     public boolean isOnline() {
         ConnectivityManager cm =
                 (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);

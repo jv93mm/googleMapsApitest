@@ -11,9 +11,22 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
+ * Clase PathJSONParser para Traducir el JSONObject obtenido de la peticion http.
+ * Este realiza ciertas operaciones dentro de decodePoly, sacando los puntos LatLng
+ * de este para posteriormente parsear todo en una estructura tipo:
+ * List<List<HashMap<String, String>>> para su posterior manipulacion.
  * Created by riont on 07/01/16.
  */
 public class PathJSONParser {
+    public PathJSONParser(){
+
+    }
+    /**
+     * Metodo que arma la estructura final para la manipulacion total de la ruta.
+     * @param jObject JSONObject que se va a manipular.
+     * @return List<List<HashMap<String, String>>> que es la estructura a manipular
+     * en el proyecto.
+     */
     public List<List<HashMap<String, String>>> parse(JSONObject jObject) {
         List<List<HashMap<String, String>>> routes = new ArrayList<List<HashMap<String, String>>>();
         JSONArray jRoutes = null;
@@ -58,6 +71,13 @@ public class PathJSONParser {
         return routes;
     }
 
+    /** Metodo decodePoly para decodificar los datos de JSON teniendo en cuenta ciertos operaciones
+     * logicas por medio sobre valores que separan los datos importantes la cuales se quieran
+     * obtener del JSON. Este metodo es usado como soporte para parse. Obteniendo los puntos
+     * para la ruta.
+     * @param encoded el String a decodificar
+     * @return List<LatLng> representan todos los puntos de la ruta optima.
+     */
     private List<LatLng> decodePoly(String encoded) {
 
         List<LatLng> poly = new ArrayList<LatLng>();
