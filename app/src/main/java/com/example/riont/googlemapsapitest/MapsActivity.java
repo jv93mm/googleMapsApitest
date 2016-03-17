@@ -4,6 +4,7 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -15,7 +16,14 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.util.ArrayList;
+
+/** Clase MapsActivity interfaz que contiene el mapa del NEOTAXIMETRO,
+ * Created by JAD on 01/01/16.
+ */
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,SimpleDialogo.SimpleDialogoListener {
 
     //<editor-fold desc="ATRIBUTOS">
@@ -142,7 +150,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     e.printStackTrace();
                 }finally {
                     String url = getMapsApiDirectionsUrl();
-                    GoogleRuta ruta = new GoogleRuta(map, url);
+                    GoogleRuta ruta = new GoogleRuta(map,url);
                     while(!ruta.getEncontrado()){
                         try {
                             sleep(1000);
@@ -151,7 +159,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         }
                     }
                     SimpleDialogo sp = new SimpleDialogo();
-                    float totalPagar = ruta.getDistancia() *50;
+                    Float totalPagar = ruta.getDistancia() *50;
                     sp.setTitulo("Total a Pagar "+ Math.round(totalPagar)+"Bsf");
                     sp.show(getFragmentManager(), "DialogPagar");
                 }
@@ -159,4 +167,5 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         };
         task.start();
     }
+
 }

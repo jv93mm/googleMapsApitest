@@ -21,7 +21,7 @@ import android.widget.Toast;
  * en dado caso de que no tenga, es notificado el usario de esto, y caso de que si
  * muestra una imagen cargada en el proyecto con una duracion de 3 seg. Luego pasa
  * a la interfaz de Mapa.
- * Created by riont on 01/01/16.
+ * Created by JAD on 01/01/16.
  */
 public class ActivitySplash  extends AppCompatActivity {
     final Context context = this;

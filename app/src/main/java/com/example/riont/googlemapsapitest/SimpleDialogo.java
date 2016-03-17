@@ -8,12 +8,11 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 
 /** Clase para mostrar Dialogo estandar en un FragmentActivity
- * Created by riont on 15/02/16.
+ * Created by JAD on 15/02/16.
  */
 public class SimpleDialogo extends DialogFragment {
 
     private String titulo;
-    private String msj;
     private AlertDialog.Builder builder;
 
     /**
@@ -33,7 +32,6 @@ public class SimpleDialogo extends DialogFragment {
      */
     public SimpleDialogo() {
         titulo = "";
-        msj = "";
     }
 
 
@@ -61,7 +59,7 @@ public class SimpleDialogo extends DialogFragment {
         // Build the dialog and set up the button click handlers
         builder = new AlertDialog.Builder(getActivity());
         builder.setMessage(titulo)
-                .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                .setPositiveButton("Buscar otra ruta", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // Send the positive button event back to the host activity
                         mListener.onDialogPositiveClick(SimpleDialogo.this);
@@ -72,9 +70,5 @@ public class SimpleDialogo extends DialogFragment {
 
     public void setTitulo(String titulo) {
         this.titulo = titulo;
-    }
-
-    public void setMsj(String msj) {
-        this.msj = msj;
     }
 }

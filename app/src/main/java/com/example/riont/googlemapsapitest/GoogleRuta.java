@@ -22,16 +22,17 @@ import java.util.List;
 /**
  * Clase GoogleRuta la cual realiza operaciones en subprocesos para obtener la ruta optima
  * y calcular la distancia de la misma.
- * Created by riont on 08/01/16.
+ * Created by JAD on 08/01/16.
  */
 public class GoogleRuta {
     //<editor-fold desc="ATRIBUTOS">
-    private GoogleMap map;
     private float distancia;
+    private GoogleMap map;
     private Boolean encontrado;
+
     //</editor-fold>
     //<editor-fold desc="CONSTRUCTORES">
-    public GoogleRuta(GoogleMap map, String url) {
+    public GoogleRuta(GoogleMap map,String url) {
         this.map = map;
         this.distancia = 0.0f;
         this.encontrado = false;
@@ -42,8 +43,8 @@ public class GoogleRuta {
     //<editor-fold desc="CLASE PARA SUBPROCESOS">
     /**
      * Clase ReadTask que extiende de AsyncTask<...> para realizar el proceso peticion
-     * HTTP de la Clase Ruta, es usada netamente por recomendacion de AndroidDeveloper.
-     * En Cuanto el proceso termine, se procede a decodificar el JSON obtenido por googleMaps.
+     * HTTP de la Clase Ruta, En Cuanto el proceso termine,
+     * se procede a decodificar el JSON obtenido por googleMaps.
      */
     private class ReadTask extends AsyncTask<String, Void, String> {
         /** Metodo que realiza la peticion HTTP en un subproceso(BackGround)
@@ -78,12 +79,13 @@ public class GoogleRuta {
      * Clase ParserTask que extiende de AsyncTask<...> para realizar los procesos de
      * decodificacion del JSON obtenido por googleMaps, la cual se obtiene una Lista con
      * los datos obtenidos de GoogleMaps de la ruta solicitada y luego hacer los calculos
-     * Correspodiente a la ruta. Recomendada su uso por AndroidDevelopers.
+     * Correspodiente a la ruta.
      */
     private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>> {
 
-        /** Metodo que realiza realiza operaciones en un subproceso(BackGround) la cual, al decodificar el
-         * String jsonData lo convierte en una Lista para una posterior manipulacion.
+        /** Metodo que realiza realiza operaciones en un subproceso(BackGround) la cual,
+         *  al decodificar el String jsonData lo convierte en una Lista para una posterior
+         *  manipulacion.
          * @param jsonData un string obtenido por la peticion HTTP de googleMaps.
          * @return Una lista los datos de la ruta obtenidos por googleMaps.
          */
@@ -110,58 +112,51 @@ public class GoogleRuta {
          */
         @Override
         protected void onPostExecute(List<List<HashMap<String, String>>> routes) {
-            ArrayList<LatLng> points;
-            PolylineOptions polyLineOptions = null;
+            encontrado = false;
+            distancia = 0.0f;
+            ArrayList<LatLng> puntos = new ArrayList<>();
+            PolylineOptions linea = new PolylineOptions();
             LatLng prePosition;
-            /*
-                Para usar Location.distanceBetween() es necesario un array como tercer
-                parametro donde se guardara el resultado del metodo.
-             */
             float[] d = new float[1];
-            // Se procede a formar la ruta.
-            for (int i = 0; i < routes.size(); i++) {
-                points = new ArrayList<LatLng>();
-                polyLineOptions = new PolylineOptions();
-                List<HashMap<String, String>> path = routes.get(i);
-                HashMap<String, String> point = path.get(0);
-                /*
-                    Para realizar el Calculo de distancia entre dos puntos
-                    se crea una pre-posicion para luego ser usado en
-                    Location.distanceBetween().
-                 */
-                double lat = Double.parseDouble(point.get("lat"));
-                double lng = Double.parseDouble(point.get("lng"));
-                prePosition = new LatLng(lat,lng);
-                points.add(prePosition);
-                for (int j = 1; j < path.size(); j++) {
-                    point = path.get(j);
-                    lat = Double.parseDouble(point.get("lat"));
-                    lng = Double.parseDouble(point.get("lng"));
-                    LatLng position = new LatLng(lat, lng);
-                    points.add(position);
-                    Location.distanceBetween(prePosition.latitude,prePosition.longitude,
-                            position.latitude,position.longitude,d);
-                    distancia = distancia + d[0];
-                    prePosition = position;
-                }
-                polyLineOptions.addAll(points);
-                polyLineOptions.width(4);
-                polyLineOptions.color(Color.CYAN);
+            List<HashMap<String, String>> path = routes.get(0);
+            prePosition = obtenerPunto(path,0);
+            puntos.add(prePosition);
+            for (int j = 1; j < path.size(); j++) {
+                LatLng position = obtenerPunto(path,j);
+                puntos.add(position);
+                Location.distanceBetween(prePosition.latitude,prePosition.longitude,
+                        position.latitude,position.longitude,d);
+                distancia = distancia + d[0];
+                prePosition = position;
             }
-            map.addPolyline(polyLineOptions);
-            //las distacias estan en metros se convierten a KM
+            linea.addAll(puntos);
+            linea.width(4);
+            linea.color(Color.RED);
             distancia = distancia / 1000;
+            map.addPolyline(linea);
             encontrado = true;
+        }
+
+        /** Metodo para obtener la ruta de la estructura principal de la clase ruta
+         * @param path Una lista que contiene hashing de Strings
+         * @param i la posicion a la cual se obtendra el punto
+         * @return Retorna el punto en la posicion j de el Hashing que contiene la lista.
+         */
+        private LatLng obtenerPunto(List<HashMap<String, String>> path ,int i){
+            HashMap<String, String> punto = path.get(i);
+            double lat = Double.parseDouble(punto.get("lat"));
+            double lng = Double.parseDouble(punto.get("lng"));
+            return new LatLng(lat,lng);
         }
     }
     //</editor-fold>
     //<editor-fold desc="GETTERS Y SETTERS">
-    public float getDistancia(){
-        return distancia;
-    }
-
     public Boolean getEncontrado() {
         return encontrado;
+    }
+
+    public float getDistancia() {
+        return distancia;
     }
     //</editor-fold>
 }

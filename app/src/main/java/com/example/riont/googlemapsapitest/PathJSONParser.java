@@ -15,7 +15,7 @@ import java.util.List;
  * Este realiza ciertas operaciones dentro de decodePoly, sacando los puntos LatLng
  * de este para posteriormente parsear todo en una estructura tipo:
  * List<List<HashMap<String, String>>> para su posterior manipulacion.
- * Created by riont on 07/01/16.
+ * Created by JAD on 07/01/16.
  */
 public class PathJSONParser {
     public PathJSONParser(){
